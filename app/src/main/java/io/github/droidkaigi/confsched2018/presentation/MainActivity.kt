@@ -10,10 +10,6 @@ import android.support.annotation.IdRes
 import android.support.annotation.MenuRes
 import android.support.annotation.StringRes
 import android.support.design.widget.CoordinatorLayout
-import android.support.v4.app.Fragment
-import dagger.android.AndroidInjector
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.support.HasSupportFragmentInjector
 import io.github.droidkaigi.confsched2018.R
 import io.github.droidkaigi.confsched2018.databinding.ActivityMainBinding
 import io.github.droidkaigi.confsched2018.di.ViewModelFactory
@@ -27,9 +23,7 @@ import io.github.droidkaigi.confsched2018.util.ext.elevationForPostLollipop
 import io.github.droidkaigi.confsched2018.util.ext.observe
 import javax.inject.Inject
 
-class MainActivity : BaseActivity(), HasSupportFragmentInjector {
-    @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
-
+class MainActivity : BaseActivity() {
     @Inject lateinit var navigationController: NavigationController
     @Inject lateinit var drawerMenu: DrawerMenu
     @Inject lateinit var viewModelFactory: ViewModelFactory
@@ -101,6 +95,7 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector {
     }
 
     private fun setBottomNavigationBehavior() {
+        binding.bottomNavigation.translationY = 0f
         (binding.bottomNavigation.layoutParams as CoordinatorLayout.LayoutParams).behavior =
                 if (Prefs.enableHideBottomNavigationBar) {
                     BottomNavigationHideBehavior()
@@ -132,8 +127,6 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector {
         super.onRestoreInstanceState(savedInstanceState)
         setupToolbar(BottomNavigationItem.forId(binding.bottomNavigation.selectedItemId))
     }
-
-    override fun supportFragmentInjector(): AndroidInjector<Fragment> = dispatchingAndroidInjector
 
     override fun onBackPressed() {
         if (drawerMenu.closeDrawerIfNeeded()) {

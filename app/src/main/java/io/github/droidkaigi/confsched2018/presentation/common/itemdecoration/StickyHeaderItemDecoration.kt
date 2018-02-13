@@ -4,13 +4,14 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
-import android.graphics.Typeface
 import android.support.v4.content.ContextCompat
+import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.widget.RecyclerView
 import android.text.TextPaint
 import android.text.TextUtils
 import android.view.View
 import io.github.droidkaigi.confsched2018.R
+import io.github.droidkaigi.confsched2018.util.ext.isLayoutDirectionRtl
 
 /**
  * Created by e10dokup on 2018/01/18.
@@ -29,7 +30,7 @@ class StickyHeaderItemDecoration constructor(
         val resource = context!!.resources
 
         textPaint.apply {
-            typeface = Typeface.DEFAULT
+            typeface = ResourcesCompat.getFont(context, R.font.notosans_medium)
             isAntiAlias = true
             textSize = resource.getDimension(R.dimen.sticky_label_font_size)
             color = ContextCompat.getColor(context, R.color.primary)
@@ -53,7 +54,11 @@ class StickyHeaderItemDecoration constructor(
             return
         }
 
-        outRect.left = contentMargin
+        if (view.isLayoutDirectionRtl()) {
+            outRect.right = contentMargin
+        } else {
+            outRect.left = contentMargin
+        }
     }
 
     override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
@@ -77,6 +82,12 @@ class StickyHeaderItemDecoration constructor(
             val textLine = callback.getGroupFirstLine(position)
             if (TextUtils.isEmpty(textLine)) continue
 
+            val textX = if (view.isLayoutDirectionRtl()) {
+                labelPadding.toFloat() + view.width.toFloat()
+            } else {
+                labelPadding.toFloat()
+            }
+
             val viewBottom = view.bottom + view.paddingBottom
             var textY = Math.max(view.height, viewBottom) - lineHeight
             if (position + 1 < totalItemCount) {
@@ -85,7 +96,7 @@ class StickyHeaderItemDecoration constructor(
                     textY = viewBottom - lineHeight
                 }
             }
-            c.drawText(textLine, labelPadding.toFloat(), textY, textPaint)
+            c.drawText(textLine, textX, textY, textPaint)
         }
     }
 

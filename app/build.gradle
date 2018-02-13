@@ -9,8 +9,8 @@ apply plugin: 'deploygate'
 apply plugin: 'com.github.triplet.play'
 
 // Manifest version
-def versionMajor = 0
-def versionMinor = 1
+def versionMajor = 1
+def versionMinor = 0
 def versionPatch = 0
 
 android {
@@ -21,7 +21,6 @@ android {
     // Play publisher
     playAccountConfigs {
         defaultAccountConfig {
-            // TODO Replace json file to the one which is generated in the API console.
             // https://github.com/Triple-T/gradle-play-publisher#authentication
             jsonFile = file('publisher-keys.json')
         }
@@ -112,6 +111,7 @@ dependencies {
 
     // Kotlin
     implementation depends.kotlin.stdlib
+    implementation depends.ktx
 
     //==================== Support Library ====================
     implementation depends.support.v4
@@ -159,6 +159,7 @@ dependencies {
     implementation depends.playService.map
 
     implementation depends.firebase.firestore
+    implementation depends.firebase.messaging
     implementation depends.firebase.auth
     implementation depends.firebase.core
 
@@ -166,6 +167,7 @@ dependencies {
 
     implementation depends.kotpref.kotpref
     implementation depends.kotpref.initializer
+    implementation depends.kotpref.enumSupport
 
     //==================== UI ====================
     implementation depends.glide.core
@@ -214,7 +216,9 @@ repositories {
 }
 
 play {
-    track = 'beta' // 'production' or 'rollout' or 'beta' or 'alpha'
+    uploadImages = true
+    track = 'production' // 'production' or 'rollout' or 'beta' or 'alpha'
+    untrackOld = true
     // userFraction = 0.1
 }
 

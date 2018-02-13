@@ -5,8 +5,26 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.Transformations
 
-fun <T> LiveData<T>.observe(owner: LifecycleOwner, observer: (T?) -> Unit) =
-        observe(owner, Observer<T> { v -> observer.invoke(v) })
+inline fun <T> LiveData<T>.observe(
+        owner: LifecycleOwner,
+        crossinline observer: (T?) -> Unit
+) {
+    observe(owner, Observer<T> { v -> observer(v) })
+}
 
-fun <X, Y> LiveData<X>.map(transformer: (X) -> Y): LiveData<Y> =
+inline fun <T> LiveData<T>.observeNonNull(
+        owner: LifecycleOwner,
+        crossinline observer: (T) -> Unit
+) {
+    this.observe(owner, Observer {
+        if (it != null) {
+            observer(it)
+        }
+    })
+}
+
+inline fun <X, Y> LiveData<X>.map(crossinline transformer: (X) -> Y): LiveData<Y> =
         Transformations.map(this, { transformer(it) })
+
+inline fun <X, Y> LiveData<X>.switchMap(crossinline transformer: (X) -> LiveData<Y>): LiveData<Y> =
+        Transformations.switchMap(this, { transformer(it) })

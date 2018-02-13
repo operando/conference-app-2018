@@ -5,10 +5,8 @@ import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.constraint.ConstraintSet
 import android.support.transition.TransitionInflater
-import android.support.v4.app.Fragment
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,20 +14,21 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.Section
 import com.xwray.groupie.ViewHolder
+import dagger.android.support.DaggerFragment
 import io.github.droidkaigi.confsched2018.R
 import io.github.droidkaigi.confsched2018.databinding.FragmentFeedBinding
-import io.github.droidkaigi.confsched2018.di.Injectable
+import io.github.droidkaigi.confsched2018.presentation.NavigationController
 import io.github.droidkaigi.confsched2018.presentation.Result
 import io.github.droidkaigi.confsched2018.presentation.feed.item.FeedItem
 import io.github.droidkaigi.confsched2018.util.ext.observe
-import io.github.droidkaigi.confsched2018.util.ext.setLinearDivider
 import io.github.droidkaigi.confsched2018.util.ext.setVisible
 import timber.log.Timber
 import javax.inject.Inject
 
-class FeedFragment : Fragment(), Injectable {
+class FeedFragment : DaggerFragment() {
 
     private lateinit var binding: FragmentFeedBinding
+    @Inject lateinit var navigationController: NavigationController
 
     private val postsSection = Section()
     private var fireBaseAnalytics: FirebaseAnalytics? = null
@@ -48,6 +47,9 @@ class FeedFragment : Fragment(), Injectable {
 
             constrainHeight(R.id.content, ConstraintSet.WRAP_CONTENT)
         }
+    }
+    private val onClickUri: (String) -> Unit = {
+        navigationController.navigateToExternalBrowser(it)
     }
 
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -82,7 +84,8 @@ class FeedFragment : Fragment(), Injectable {
                                         feedItemCollapsed,
                                         feedItemExpanded,
                                         expandTransition,
-                                        collapseTransition
+                                        collapseTransition,
+                                        onClickUri
                                 )
                             })
                     binding.feedInactiveGroup.setVisible(posts.isEmpty())

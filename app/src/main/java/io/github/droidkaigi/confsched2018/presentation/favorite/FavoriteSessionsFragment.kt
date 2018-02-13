@@ -5,7 +5,6 @@ import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.transition.TransitionInflater
 import android.support.transition.TransitionManager
-import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SimpleItemAnimator
@@ -14,9 +13,9 @@ import android.view.View
 import android.view.ViewGroup
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
+import dagger.android.support.DaggerFragment
 import io.github.droidkaigi.confsched2018.R
 import io.github.droidkaigi.confsched2018.databinding.FragmentFavoriteSessionsBinding
-import io.github.droidkaigi.confsched2018.di.Injectable
 import io.github.droidkaigi.confsched2018.model.Session
 import io.github.droidkaigi.confsched2018.presentation.NavigationController
 import io.github.droidkaigi.confsched2018.presentation.Result
@@ -33,7 +32,7 @@ import io.github.droidkaigi.confsched2018.util.ext.setVisible
 import timber.log.Timber
 import javax.inject.Inject
 
-class FavoriteSessionsFragment : Fragment(), Injectable {
+class FavoriteSessionsFragment : DaggerFragment() {
 
     private lateinit var binding: FragmentFavoriteSessionsBinding
 
@@ -42,6 +41,7 @@ class FavoriteSessionsFragment : Fragment(), Injectable {
     @Inject lateinit var navigationController: NavigationController
     @Inject lateinit var sessionAlarm: SessionAlarm
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+    @Inject lateinit var sharedRecycledViewPool: RecyclerView.RecycledViewPool
     private val sessionsViewModel: FavoriteSessionsViewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(FavoriteSessionsViewModel::class.java)
     }
@@ -115,6 +115,8 @@ class FavoriteSessionsFragment : Fragment(), Injectable {
                     })
             setLinearDivider(R.drawable.shape_divider_vertical_12dp,
                     layoutManager as LinearLayoutManager)
+            recycledViewPool = sharedRecycledViewPool
+            (layoutManager as LinearLayoutManager).recycleChildrenOnDetach = true
         }
     }
 

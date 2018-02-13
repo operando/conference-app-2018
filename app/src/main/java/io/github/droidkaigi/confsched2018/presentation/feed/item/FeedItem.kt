@@ -19,7 +19,8 @@ data class FeedItem(
         private val feedItemCollapsed: ConstraintSet,
         private val feedItemExpanded: ConstraintSet,
         private val expandTransition: Transition,
-        private val collapseTransition: Transition
+        private val collapseTransition: Transition,
+        private val onClickUri: (String) -> Unit
 ) : BindableItem<ItemFeedBinding>(
         post.hashCode().toLong()
 ) {
@@ -31,11 +32,13 @@ data class FeedItem(
         viewBinding.post = post
 
         viewBinding.feedIcon.setImageResource(when (post.type) {
-            Post.Type.Tutorial -> R.drawable.ic_feed_tutorial_pink_20dp
-            Post.Type.Notification -> R.drawable.ic_feed_notification_blue_20dp
-            Post.Type.Alert -> R.drawable.ic_feed_alert_amber_20dp
-            Post.Type.Enquete -> R.drawable.ic_feed_enquete_cyan_20dp
+            Post.Type.TUTORIAL -> R.drawable.ic_feed_tutorial_pink_20dp
+            Post.Type.NOTIFICATION -> R.drawable.ic_feed_notification_blue_20dp
+            Post.Type.ALERT -> R.drawable.ic_feed_alert_amber_20dp
+            Post.Type.FEEDBACK -> R.drawable.ic_feed_feedback_cyan_20dp
         })
+
+        viewBinding.content.onClickUrl = onClickUri
 
         viewBinding.content.viewTreeObserver.apply {
             addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {

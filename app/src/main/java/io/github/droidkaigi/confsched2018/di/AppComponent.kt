@@ -3,7 +3,8 @@ package io.github.droidkaigi.confsched2018.di
 import android.app.Application
 import dagger.BindsInstance
 import dagger.Component
-import dagger.android.AndroidInjectionModule
+import dagger.android.AndroidInjector
+import dagger.android.support.AndroidSupportInjectionModule
 import io.github.droidkaigi.confsched2018.di.activitymodule.AboutThisAppActivityBuilder
 import io.github.droidkaigi.confsched2018.di.activitymodule.ContributorsActivityBuilder
 import io.github.droidkaigi.confsched2018.di.activitymodule.MainActivityBuilder
@@ -16,15 +17,17 @@ import io.github.droidkaigi.confsched2018.di.activitymodule.SponsorsActivityBuil
 import io.github.droidkaigi.confsched2018.di.activitymodule.StaffActivityBuilder
 import io.github.droidkaigi.confsched2018.di.activitymodule.TopicDetailActivityBuilder
 import io.github.droidkaigi.confsched2018.presentation.App
+import io.github.droidkaigi.confsched2018.service.push.PushServiceBuilder
 import javax.inject.Singleton
 
 @Singleton
 @Component(modules = [
-    AndroidInjectionModule::class,
+    AndroidSupportInjectionModule::class,
     AppModule::class,
     NetworkModule::class,
     DatabaseModule::class,
     ViewModelModule::class,
+    PushServiceBuilder::class,
     MainActivityBuilder::class,
     MapActivityBuilder::class,
     AboutThisAppActivityBuilder::class,
@@ -37,7 +40,7 @@ import javax.inject.Singleton
     TopicDetailActivityBuilder::class,
     SessionsFeedbackActivityBuilder::class
 ])
-interface AppComponent {
+interface AppComponent : AndroidInjector<App> {
     @Component.Builder
     interface Builder {
         @BindsInstance fun application(application: Application): Builder
@@ -46,5 +49,5 @@ interface AppComponent {
         fun build(): AppComponent
     }
 
-    fun inject(app: App)
+    override fun inject(app: App)
 }

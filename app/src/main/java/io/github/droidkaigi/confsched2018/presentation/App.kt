@@ -1,8 +1,8 @@
 package io.github.droidkaigi.confsched2018.presentation
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.support.multidex.MultiDexApplication
+import android.content.Context
+import android.support.multidex.MultiDex
 import android.support.text.emoji.EmojiCompat
 import android.support.text.emoji.FontRequestEmojiCompatConfig
 import android.support.v4.provider.FontRequest
@@ -10,29 +10,35 @@ import android.support.v7.app.AppCompatDelegate
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
+import com.google.firebase.messaging.FirebaseMessaging
 import com.jakewharton.threetenabp.AndroidThreeTen
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasActivityInjector
+import dagger.android.AndroidInjector
+import dagger.android.support.DaggerApplication
 import io.github.droidkaigi.confsched2018.R
-import io.github.droidkaigi.confsched2018.di.AppInjector
-import io.github.droidkaigi.confsched2018.presentation.common.notification.NotificationHelper
+import io.github.droidkaigi.confsched2018.di.DaggerAppComponent
+import io.github.droidkaigi.confsched2018.di.DatabaseModule
+import io.github.droidkaigi.confsched2018.di.NetworkModule
+import io.github.droidkaigi.confsched2018.presentation.common.notification.initNotificationChannel
+import io.github.droidkaigi.confsched2018.service.push.processor.NewPostProcessor
 import timber.log.Timber
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig
-import javax.inject.Inject
 
 @SuppressLint("Registered")
-open class App : MultiDexApplication(), HasActivityInjector {
-    @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Activity>
+open class App : DaggerApplication() {
 
     override fun onCreate() {
         super.onCreate()
         setupFirebase()
         setupVectorDrawable()
         setupThreeTenABP()
-        setupDagger()
         setupCalligraphy()
         setupEmoji()
         setupNotification()
+    }
+
+    override fun attachBaseContext(base: Context) {
+        super.attachBaseContext(base)
+        MultiDex.install(this)
     }
 
     private fun setupFirebase() {
@@ -43,6 +49,8 @@ open class App : MultiDexApplication(), HasActivityInjector {
                     .setPersistenceEnabled(false)
                     .build()
             fireStore.firestoreSettings = settings
+            // push notification for new feed
+            FirebaseMessaging.getInstance().subscribeToTopic(NewPostProcessor.TOPIC)
         }
     }
 
@@ -54,10 +62,6 @@ open class App : MultiDexApplication(), HasActivityInjector {
         if (!isInUnitTests()) {
             AndroidThreeTen.init(this)
         }
-    }
-
-    open fun setupDagger() {
-        AppInjector.init(this)
     }
 
     private fun setupCalligraphy() {
@@ -87,11 +91,16 @@ open class App : MultiDexApplication(), HasActivityInjector {
     }
 
     private fun setupNotification() {
-        NotificationHelper.initNotificationChannel(this)
+        initNotificationChannel()
     }
 
-    override fun activityInjector(): DispatchingAndroidInjector<Activity> =
-            dispatchingAndroidInjector
+    override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
+        return DaggerAppComponent.builder()
+                .application(this)
+                .networkModule(NetworkModule.instance)
+                .databaseModule(DatabaseModule.instance)
+                .build()
+    }
 
     protected open fun isInUnitTests() = false
 }

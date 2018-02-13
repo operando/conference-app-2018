@@ -7,6 +7,7 @@ import android.support.design.widget.CoordinatorLayout
 import android.support.design.widget.Snackbar
 import android.util.AttributeSet
 import android.view.View
+import io.github.droidkaigi.confsched2018.util.ext.setPaddingWithLayoutDirection
 
 /**
  * Behavior to show Snackbar above BottomNavigationView
@@ -53,7 +54,7 @@ open class BottomNavigationBehavior : CoordinatorLayout.Behavior<BottomNavigatio
     internal fun updateSnackBarPaddingBottomByBottomNavigationView(view: BottomNavigationView) {
         snackbar?.apply {
             val translateY = (view.height - view.translationY).toInt()
-            setPadding(paddingLeft, paddingTop, paddingRight, translateY)
+            setPaddingWithLayoutDirection(paddingStart, paddingTop, paddingEnd, translateY)
             requestLayout()
         }
     }
