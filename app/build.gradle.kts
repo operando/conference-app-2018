@@ -50,11 +50,11 @@ android {
             }
         }
     }
+
     applicationVariants.all(object : Action<ApplicationVariant> {
         override fun execute(variant: ApplicationVariant) {
             variant.resValue("string", "versionInfo", variant.versionName)
         }
-
     })
     signingConfigs {
         getByName("debug") {
@@ -140,8 +140,8 @@ dependencies {
     implementation(Depends.Retrofit.adapterRxJava2)
 
 //==================== Structure ====================
-    implementation(Depends.Kotshi.api)
-    kapt(Depends.Kotshi.compiler)
+    implementation(Depends.Moshi.api)
+    kapt(Depends.Moshi.compiler)
 
     implementation(Depends.LifeCycle.runtime)
     implementation(Depends.LifeCycle.extensions)
