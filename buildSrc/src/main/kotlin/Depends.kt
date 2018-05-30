@@ -28,9 +28,9 @@ object Depends {
         val adapterRxJava2 = "com.squareup.retrofit2:adapter-rxjava2:${Versions.retrofit}"
     }
 
-    object Kotshi {
-        val api = "se.ansman.kotshi:api:${Versions.kotshi}"
-        val compiler = "se.ansman.kotshi:compiler:${Versions.kotshi}"
+    object Moshi {
+        val api = "com.squareup.moshi:moshi-kotlin:${Versions.moshi}"
+        val compiler = "com.squareup.moshi:moshi-kotlin-codegen:${Versions.moshi}"
     }
 
     object LifeCycle {

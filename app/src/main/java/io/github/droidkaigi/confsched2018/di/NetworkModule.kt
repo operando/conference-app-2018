@@ -8,7 +8,6 @@ import io.github.droidkaigi.confsched2018.data.api.FeedApi
 import io.github.droidkaigi.confsched2018.data.api.FeedFirestoreApi
 import io.github.droidkaigi.confsched2018.data.api.GithubApi
 import io.github.droidkaigi.confsched2018.data.api.SessionFeedbackApi
-import io.github.droidkaigi.confsched2018.data.api.response.mapper.ApplicationJsonAdapterFactory
 import io.github.droidkaigi.confsched2018.data.api.response.mapper.InstantAdapter
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -43,7 +42,6 @@ open class NetworkModule {
                 .client(okHttpClient)
                 .baseUrl("https://droidkaigi.jp/2018/")
                 .addConverterFactory(MoshiConverterFactory.create(Moshi.Builder()
-                        .add(ApplicationJsonAdapterFactory.INSTANCE)
                         .add(Instant::class.java, InstantAdapter())
                         .build()))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.createAsync())
@@ -56,7 +54,6 @@ open class NetworkModule {
                 .client(okHttpClient)
                 .baseUrl("https://docs.google.com/forms/d/")
                 .addConverterFactory(MoshiConverterFactory.create(Moshi.Builder()
-                        .add(ApplicationJsonAdapterFactory.INSTANCE)
                         .add(Instant::class.java, InstantAdapter())
                         .build()))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.createAsync())
@@ -68,7 +65,6 @@ open class NetworkModule {
         return Retrofit.Builder()
                 .baseUrl("https://api.github.com")
                 .addConverterFactory(MoshiConverterFactory.create(Moshi.Builder()
-                        .add(ApplicationJsonAdapterFactory.INSTANCE)
                         .add(Instant::class.java, InstantAdapter())
                         .build()))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.createAsync())
